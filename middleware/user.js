@@ -4,7 +4,8 @@ const { User } = require('../db'); // Import the User model
 
 async function userMiddleware(req, res, next) {
     const token = req.headers.authorization;
-    const jwtToken = token.split(" ")[1];
+    const words = token.split(" ");
+    const jwtToken = words[1];
 
     try {
         const decodedValue = jwt.verify(jwtToken, JWT_SECRET_KEY);

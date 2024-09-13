@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 const { JWT_SECRET_KEY } = require("../config")
 const userMiddleware = require("../middleware/user")
 
-
+// For SignUp
 router.post("/signup", async (req, res) => {
     const username = req.body.username
     const password = req.body.password
@@ -22,6 +22,7 @@ router.post("/signup", async (req, res) => {
     })
 })
 
+// For Signin
 router.post("/signin", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -45,6 +46,7 @@ router.post("/signin", async (req, res) => {
     }
 })
 
+// To add Blogs
 router.post("/blogs", userMiddleware, async (req, res) => {
     const { title, content } = req.body;
     try {
@@ -68,6 +70,8 @@ router.post("/blogs", userMiddleware, async (req, res) => {
     }
 });
 
+
+// To get all the Approved Blogs
 router.get('/blogs', userMiddleware, async (req, res) => {
     try {
         const approvedBlogs = await Blogs.find({
@@ -89,6 +93,7 @@ router.get('/blogs', userMiddleware, async (req, res) => {
     }
 })
 
+// To get all the blogs 
 router.get("/myblogs", userMiddleware, async (req, res) => {
     try {
         const userBlogs = await Blogs.find({
