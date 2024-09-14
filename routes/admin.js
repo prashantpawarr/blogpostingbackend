@@ -9,10 +9,12 @@ const adminMiddleware = require("../middleware/admin");
 router.post("/signup", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
+  const email = req.body.email;
 
   await Admin.create({
     username,
     password,
+    email,
   });
 
   res.status(200).json({
@@ -24,10 +26,12 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
+  const email = req.body.email;
 
   const admin = await Admin.findOne({
     username,
     password,
+    email,
   });
 
   if (admin) {
