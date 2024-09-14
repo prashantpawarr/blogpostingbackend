@@ -31,16 +31,17 @@ router.post("/signin", async (req, res) => {
   const email = req.body.email;
 
   const user = await User.findOne({
-    username,
     password,
     email,
   });
   if (user) {
     const token = jwt.sign(
       {
+        id: user._id,
         username,
       },
-      JWT_SECRET_KEY
+      JWT_SECRET_KEY,
+      { expiresIn: "1h" }
     );
     res.status(200).json({
       token,
