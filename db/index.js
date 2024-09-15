@@ -20,17 +20,21 @@ const UserSchema = new mongoose.Schema({
 const BlogsSchema = new mongoose.Schema({
   title: String,
   content: String,
-  author: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   status: {
     type: String,
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
+  images: [
+    {
+      url: String,
+      caption: String,
+    },
+  ],
 });
 
 const Admin = mongoose.model("Admin", AdminSchema);

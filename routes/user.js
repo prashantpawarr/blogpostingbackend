@@ -4,6 +4,8 @@ const router = Router();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config");
 const userMiddleware = require("../middleware/user");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // For SignUp
 router.post("/signup", async (req, res) => {
@@ -54,8 +56,9 @@ router.post("/signin", async (req, res) => {
 });
 
 // To add Blogs
-router.post("/blogs", userMiddleware, async (req, res) => {
+router.post("/blogs", userMiddleware, upload.array("images"), async (req, res) => {
   const { title, content } = req.body;
+
   try {
     const user = await User.findOne({ username: req.user.username });
 
@@ -63,11 +66,16 @@ router.post("/blogs", userMiddleware, async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const imageFiles = req.files.map((file) => ({
+      url: `/uploads/${file.filename}`, 
+    }));
+
     const blog = new Blogs({
       title,
       content,
       author: user._id,
       status: "pending",
+      images: imageFiles,
     });
 
     await blog.save();

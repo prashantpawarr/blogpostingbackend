@@ -5,6 +5,7 @@ const adminRouter = require("./routes/admin");
 const userRouter = require("./routes/user");
 const cors = require("cors");
 
+app.use("/uploads", express.static("uploads"));
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/admin", adminRouter);
