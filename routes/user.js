@@ -43,7 +43,7 @@ router.post("/signin", async (req, res) => {
         username,
       },
       JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "0.5h" }
     );
     res.status(200).json({
       token,
