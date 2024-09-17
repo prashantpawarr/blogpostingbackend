@@ -29,7 +29,6 @@ router.post("/signin", async (req, res) => {
   const email = req.body.email;
 
   const admin = await Admin.findOne({
-    username,
     password,
     email,
   });

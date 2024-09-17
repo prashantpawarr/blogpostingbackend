@@ -56,34 +56,39 @@ router.post("/signin", async (req, res) => {
 });
 
 // To add Blogs
-router.post("/blogs", userMiddleware, upload.array("images"), async (req, res) => {
-  const { title, content } = req.body;
+router.post(
+  "/blogs",
+  userMiddleware,
+  upload.array("images"),
+  async (req, res) => {
+    const { title, content } = req.body;
 
-  try {
-    const user = await User.findOne({ username: req.user.username });
+    try {
+      const user = await User.findOne({ username: req.user.username });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const imageFiles = req.files.map((file) => ({
+        url: `/uploads/${file.filename}`,
+      }));
+
+      const blog = new Blogs({
+        title,
+        content,
+        author: user._id,
+        status: "pending",
+        images: imageFiles,
+      });
+
+      await blog.save();
+      res.json({ message: "Blog submitted for review", blogId: blog._id });
+    } catch (err) {
+      res.status(500).json({ message: "Error submitting blog post", err });
     }
-
-    const imageFiles = req.files.map((file) => ({
-      url: `/uploads/${file.filename}`, 
-    }));
-
-    const blog = new Blogs({
-      title,
-      content,
-      author: user._id,
-      status: "pending",
-      images: imageFiles,
-    });
-
-    await blog.save();
-    res.json({ message: "Blog submitted for review", blogId: blog._id });
-  } catch (err) {
-    res.status(500).json({ message: "Error submitting blog post", err });
   }
-});
+);
 
 // To get all the Approved Blogs
 router.get("/blogs", userMiddleware, async (req, res) => {
