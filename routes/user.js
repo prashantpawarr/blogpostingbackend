@@ -28,67 +28,68 @@ router.post("/signup", async (req, res) => {
 
 // For Signin
 router.post("/signin", async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const email = req.body.email;
+    const password = req.body.password;
+    const email = req.body.email;
 
-  const user = await User.findOne({
-    password,
-    email,
-  });
-  if (user) {
-    const token = jwt.sign(
-      {
-        id: user._id,
-        username,
-      },
-      JWT_SECRET_KEY,
-      { expiresIn: "0.5h" }
-    );
-    res.status(200).json({
-      token,
+    const user = await User.findOne({
+        password,
+        email,
     });
-  } else {
-    res.status(403).json({
-      message: "Invalid username or password",
-    });
-  }
+    if (user) {
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email, 
+            },
+            JWT_SECRET_KEY,
+            { expiresIn: "0.5h" }
+        );
+        res.status(200).json({
+            token,
+        });
+    } else {
+        res.status(403).json({
+            message: "Invalid email or password",
+        });
+    }
 });
+
 
 // To add Blogs
 router.post(
-  "/blogs",
-  userMiddleware,
-  upload.array("images"),
-  async (req, res) => {
-    const { title, content } = req.body;
+    "/blogs",
+    userMiddleware,
+    upload.array("images"),
+    async (req, res) => {
+        const { title, content } = req.body;
 
-    try {
-      const user = await User.findOne({ username: req.user.username });
+        try {
+            const user = await User.findOne({ email: req.user.email }); // Check using email
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
 
-      const imageFiles = req.files.map((file) => ({
-        url: `/uploads/${file.filename}`,
-      }));
+            const imageFiles = req.files.map((file) => ({
+                url: `/uploads/${file.filename}`,
+            }));
 
-      const blog = new Blogs({
-        title,
-        content,
-        author: user._id,
-        status: "pending",
-        images: imageFiles,
-      });
+            const blog = new Blogs({
+                title,
+                content,
+                author: user._id,
+                status: "pending",
+                images: imageFiles,
+            });
 
-      await blog.save();
-      res.json({ message: "Blog submitted for review", blogId: blog._id });
-    } catch (err) {
-      res.status(500).json({ message: "Error submitting blog post", err });
+            await blog.save();
+            res.json({ message: "Blog submitted for review", blogId: blog._id });
+        } catch (err) {
+            res.status(500).json({ message: "Error submitting blog post", err });
+        }
     }
-  }
 );
+
 
 // To get all the Approved Blogs
 router.get("/blogs", userMiddleware, async (req, res) => {

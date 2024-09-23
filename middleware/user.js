@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config");
-const { User } = require("../db"); // Import the User model
+const { User } = require("../db");
 
 async function userMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -19,14 +19,14 @@ async function userMiddleware(req, res, next) {
   try {
     const decodedValue = jwt.verify(jwtToken, JWT_SECRET_KEY);
 
-    const user = await User.findOne({ username: decodedValue.username });
+    const user = await User.findOne({ email: decodedValue.email });
 
     if (user) {
       req.user = {
         id: user._id,
-        username: user.username,
+        email: user.email,
       };
-      next(); 
+      next();
     } else {
       res.status(403).json({
         message: "Authentication failed",
