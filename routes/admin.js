@@ -7,12 +7,10 @@ const adminMiddleware = require("../middleware/admin");
 
 // For SignUp
 router.post("/signup", async (req, res) => {
-  const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
 
   await Admin.create({
-    username,
     password,
     email,
   });
@@ -24,7 +22,6 @@ router.post("/signup", async (req, res) => {
 
 // For Signin
 router.post("/signin", async (req, res) => {
-  const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
 
@@ -36,7 +33,7 @@ router.post("/signin", async (req, res) => {
   if (admin) {
     const token = jwt.sign(
       {
-        username,
+        email,
       },
       JWT_SECRET_KEY
     );

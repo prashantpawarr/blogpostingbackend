@@ -7,8 +7,8 @@ function adminMiddleware(req, res, next) {
     const jwtToken = words[1];
     try {
         const decodedValue = jwt.verify(jwtToken, JWT_SECRET_KEY);
-        if (decodedValue.username) {
-            req.user = decodedValue;
+        if (decodedValue.email) {
+            req.email = decodedValue;
             next()
         }
         else {
