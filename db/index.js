@@ -29,12 +29,7 @@ const BlogsSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
-  images: [
-    {
-      url: String,
-      caption: String,
-    },
-  ],
+  image: String,
 });
 
 const Admin = mongoose.model("Admin", AdminSchema);

@@ -12,6 +12,7 @@ app.use(cors());
 app.use("/admin", adminRouter);
 app.use("/user", userRouter);
 app.use("/", publicRouter);
+app.use(express.static("public"));
 
 const PORT = 3001;
 

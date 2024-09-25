@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config");
 const userMiddleware = require("../middleware/user");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const path = require("path");
 
 // For SignUp
 router.post("/signup", async (req, res) => {
@@ -54,42 +54,52 @@ router.post("/signin", async (req, res) => {
   }
 });
 
-
 // To add Blogs
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images");
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.fieldname + "_" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({
+  storage: storage,
+});
+
 router.post(
   "/blogs",
   userMiddleware,
-  upload.array("images"),
+  upload.single("file"),
   async (req, res) => {
     const { title, content } = req.body;
 
     try {
-      const user = await User.findOne({ email: req.user.email }); // Check using email
+      const user = await User.findOne({ email: req.user.email });
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const imageFiles = req.files.map((file) => ({
-        url: `${req.protocol}://${req.get('host')}/uploads/${file.filename}`,
-      }));
-
-      const blog = new Blogs({
+      const blog = await Blogs.create({
         title,
         content,
         author: user._id,
         status: "pending",
-        images: imageFiles,
+        image: req.file.filename,
       });
 
-      await blog.save();
       res.json({ message: "Blog submitted for review", blogId: blog._id });
     } catch (err) {
       res.status(500).json({ message: "Error submitting blog post", err });
     }
   }
 );
-
 
 // To get all the Approved Blogs
 router.get("/blogs", userMiddleware, async (req, res) => {
