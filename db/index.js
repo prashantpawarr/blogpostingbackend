@@ -15,6 +15,7 @@ const UserSchema = new mongoose.Schema({
   password: String,
   role: String,
   email: String,
+  image: String,
 });
 
 const BlogsSchema = new mongoose.Schema({
@@ -29,7 +30,7 @@ const BlogsSchema = new mongoose.Schema({
     enum: ["pending", "approved", "rejected"],
     default: "pending",
   },
-  image: String
+  image: String,
 });
 
 const Admin = mongoose.model("Admin", AdminSchema);

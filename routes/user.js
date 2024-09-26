@@ -7,18 +7,16 @@ const userMiddleware = require("../middleware/user");
 const multer = require("multer");
 const path = require("path");
 
-// For SignUp
+
 router.post("/signup", async (req, res) => {
-  const username = req.body.username;
-  const password = req.body.password;
-  const role = req.body.role;
-  const email = req.body.email;
+  const { username, password, role, email, selectedAvatar } = req.body;
 
   await User.create({
     username,
     password,
     role,
     email,
+    image: selectedAvatar,
   });
 
   res.status(200).json({
@@ -42,10 +40,12 @@ router.post("/signin", async (req, res) => {
         email,
       },
       JWT_SECRET_KEY,
-      { expiresIn: "0.5h" }
+      { expiresIn: "0.1h" }
     );
+    console.log(token, user.image);
     res.status(200).json({
       token,
+      avatar: user.image,
     });
   } else {
     res.status(403).json({
@@ -107,7 +107,7 @@ router.get("/blogs", userMiddleware, async (req, res) => {
     const approvedBlogs = await Blogs.find({
       author: { $in: [req.user.id] },
       status: "approved",
-    }).populate("author", "username");
+    }).populate("author", "username image");
 
     if (approvedBlogs.length === 0) {
       res.json({

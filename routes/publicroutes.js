@@ -4,9 +4,10 @@ const router = Router();
 
 router.get("/allblogs", async (req, res) => {
   try {
+    // Fetch approved blogs and populate author details
     const approvedBlogs = await Blogs.find({
       status: "approved",
-    }).populate("author", "username");
+    }).populate("author", "username image");
 
     if (approvedBlogs.length === 0) {
       return res.status(404).json({
